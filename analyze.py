@@ -32,10 +32,9 @@ def run_analysis():
         response = requests.get(CCTV_URL, headers=headers, timeout=15)
         response.raise_for_status()
         
-        # PIL 이미지 객체로 변환
         image = Image.open(BytesIO(response.content))
 
-        # 3. 최신 Gemini 모델(gemini-2.5-flash) 호출
+        # 3. 최신 Gemini 모델(gemini-3.8-flash) 호출로 변경
         prompt = """
         당신은 한강공원 실시간 상태를 분석하는 정밀 관측 AI입니다.
         제공된 CCTV 이미지를 분석하여 날씨, 가시거리, 혼잡도 상태를 판독하세요.
@@ -48,21 +47,19 @@ def run_analysis():
         }
         """
         
-        print("Gemini Vision AI 분석 요청 중...")
+        print("Gemini Vision AI 분석 요청 중 (3.8-flash)...")
         result = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.8-flash',
             contents=[image, prompt]
         )
         
         result_text = result.text.strip()
         
-        # 마크다운 텍스트 보정
         if "```" in result_text:
             result_text = result_text.replace("```json", "").replace("```", "").strip()
             
         data = json.loads(result_text)
         
-        # 메타데이터 추가
         data["location"] = "여의도 한강공원"
         data["updated_at"] = now
         
