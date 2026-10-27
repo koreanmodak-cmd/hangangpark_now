@@ -2,23 +2,25 @@ import os
 import json
 import requests
 import sys
+from io import BytesIO
+from PIL import Image
 from datetime import datetime, timezone, timedelta
-import google.generativeai as genai
+from google import genai
 
 # 한국 시간(KST) 설정
 kst = timezone(timedelta(hours=9))
 now = datetime.now(kst).strftime("%Y-%m-%d %H:%M:%S")
 
-# 1. 깃허브 금고에서 API 키 불러오기
+# 1. 깃허브 금고에서 API 키 불러오기 및 최신 Client 생성
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 if not API_KEY:
     print("❌ 에러: GEMINI_API_KEY가 설정되지 않았습니다.")
     sys.exit(1)
 
-genai.configure(api_key=API_KEY)
+client = genai.Client(api_key=API_KEY)
 
-# 2. 깃허브 액션에서도 차단되지 않는 테스트 이미지 URL (Unsplash)
+# 2. 테스트용 CCTV 이미지 (Unsplash)
 CCTV_URL = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
 
 def run_analysis():
@@ -29,11 +31,11 @@ def run_analysis():
         }
         response = requests.get(CCTV_URL, headers=headers, timeout=15)
         response.raise_for_status()
-        image_data = {"mime_type": "image/jpeg", "data": response.content}
-
-        # 3. Gemini Vision 모델 호출
-        model = genai.GenerativeModel('gemini-1.5-flash')
         
+        # PIL 이미지 객체로 변환
+        image = Image.open(BytesIO(response.content))
+
+        # 3. 최신 Gemini 모델(gemini-2.5-flash) 호출
         prompt = """
         당신은 한강공원 실시간 상태를 분석하는 정밀 관측 AI입니다.
         제공된 CCTV 이미지를 분석하여 날씨, 가시거리, 혼잡도 상태를 판독하세요.
@@ -47,10 +49,14 @@ def run_analysis():
         """
         
         print("Gemini Vision AI 분석 요청 중...")
-        result = model.generate_content([prompt, image_data])
+        result = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[image, prompt]
+        )
+        
         result_text = result.text.strip()
         
-        # 마크다운 텍스트 제거 보정
+        # 마크다운 텍스트 보정
         if "```" in result_text:
             result_text = result_text.replace("```json", "").replace("```", "").strip()
             
