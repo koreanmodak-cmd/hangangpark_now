@@ -13,7 +13,7 @@ API_KEY = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 
 # 2. 임시 테스트용 CCTV 이미지 (추후 공공데이터 API 주소로 교체)
-CCTV_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Han_River_Bridge.jpg/800px-Han_River_Bridge.jpg"
+CCTV_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTabr4cPAHl5XNWy6WMJ-GlpzaafsVq_9c5KFRE746WReERgOVJj8DGgRWe&s=10"
 
 def run_analysis():
     try:
