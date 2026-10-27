@@ -21,7 +21,7 @@ jobs:
         python-version: '3.12'
 
     - name: 3. 최신 SDK 및 라이브러리 설치
-      run: pip install google-genai requests pillow
+      run: pip install requests
 
     - name: 4. AI 비전 분석 스크립트 실행
       env:
