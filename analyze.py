@@ -11,7 +11,7 @@ from google import genai
 kst = timezone(timedelta(hours=9))
 now = datetime.now(kst).strftime("%Y-%m-%d %H:%M:%S")
 
-# 1. 깃허브 금고에서 API 키 불러오기 및 최신 Client 생성
+# 1. 깃허브 금고에서 API 키 불러오기
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 if not API_KEY:
@@ -34,7 +34,7 @@ def run_analysis():
         
         image = Image.open(BytesIO(response.content))
 
-        # 3. 최신 Gemini 모델(gemini-3.8-flash) 호출로 변경
+        # 3. 최신 Gemini 모델 명시적 적용 (3.8-flash)
         prompt = """
         당신은 한강공원 실시간 상태를 분석하는 정밀 관측 AI입니다.
         제공된 CCTV 이미지를 분석하여 날씨, 가시거리, 혼잡도 상태를 판독하세요.
@@ -47,7 +47,7 @@ def run_analysis():
         }
         """
         
-        print("Gemini Vision AI 분석 요청 중 (3.8-flash)...")
+        print("Gemini Vision AI 분석 요청 중 (gemini-3.8-flash)...")
         result = client.models.generate_content(
             model='gemini-3.8-flash',
             contents=[image, prompt]
@@ -55,6 +55,7 @@ def run_analysis():
         
         result_text = result.text.strip()
         
+        # 마크다운 텍스트 보정
         if "```" in result_text:
             result_text = result_text.replace("```json", "").replace("```", "").strip()
             
