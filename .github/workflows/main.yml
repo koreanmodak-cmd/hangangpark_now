@@ -1,0 +1,36 @@
+name: Auto CCTV Analysis
+
+# 언제 이 공장을 돌릴 것인가?
+on:
+  schedule:
+    - cron: '*/30 * * * *' # 매 30분마다 자동 실행
+  workflow_dispatch: # 수동으로 버튼을 눌러서 실행할 수 있게 허용
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 1. 내 저장소 코드 가져오기
+      uses: actions/checkout@v3
+
+    - name: 2. 파이썬 환경 세팅
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 3. 필요한 라이브러리 설치
+      run: pip install google-generativeai requests pillow
+
+    - name: 4. AI 비전 분석 스크립트 실행
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # 금고에서 API 키 꺼내오기
+      run: python analyze.py
+
+    - name: 5. 갱신된 JSON 파일을 깃허브에 밀어넣기(저장)
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Bot"
+        git add data.json
+        # 변경사항이 없으면 에러가 나지 않도록 예외 처리
+        git commit -m "데이터 자동 갱신: 한강공원 상태" || echo "No changes to commit"
+        git push
