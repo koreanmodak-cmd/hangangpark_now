@@ -24,7 +24,11 @@ CCTV_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Han_River_
 def run_analysis():
     try:
         print("CCTV 이미지 다운로드 중...")
-        response = requests.get(CCTV_URL, timeout=10)
+        # 위키미디어 차단 방지를 위한 브라우저 흉내(User-Agent) 헤더 추가
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        response = requests.get(CCTV_URL, headers=headers, timeout=10)
         response.raise_for_status()
         image_data = {"mime_type": "image/jpeg", "data": response.content}
 
@@ -65,7 +69,7 @@ def run_analysis():
         
     except Exception as e:
         print(f"❌ 분석 중 치명적 에러 발생: {e}")
-        sys.exit(1) # 깃허브 액션에 에러를 명시적으로 전달하여 빨간색으로 표시되게 함
+        sys.exit(1)
 
 if __name__ == "__main__":
     run_analysis()
