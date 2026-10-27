@@ -51,7 +51,7 @@ def run_analysis():
         print("Gemini Vision AI 분석 요청 중 (gemini-3.8-flash)...")
         
         # 💡 [핵심] 구글 서버 폭주(503 에러) 대비 재시도 방어막 구축
-        max_retries = 10
+        max_retries = 3
         result = None
         
         for attempt in range(max_retries):
