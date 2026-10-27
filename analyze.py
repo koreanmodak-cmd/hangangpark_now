@@ -18,17 +18,16 @@ if not API_KEY:
 
 genai.configure(api_key=API_KEY)
 
-# 2. 임시 테스트용 CCTV 이미지
-CCTV_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTabr4cPAHl5XNWy6WMJ-GlpzaafsVq_9c5KFRE746WReERgOVJj8DGgRWe&s=10"
+# 2. 깃허브 액션에서도 차단되지 않는 테스트 이미지 URL (Unsplash)
+CCTV_URL = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800"
 
 def run_analysis():
     try:
         print("CCTV 이미지 다운로드 중...")
-        # 위키미디어 차단 방지를 위한 브라우저 흉내(User-Agent) 헤더 추가
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        response = requests.get(CCTV_URL, headers=headers, timeout=10)
+        response = requests.get(CCTV_URL, headers=headers, timeout=15)
         response.raise_for_status()
         image_data = {"mime_type": "image/jpeg", "data": response.content}
 
@@ -43,7 +42,7 @@ def run_analysis():
             "weather": "맑음",
             "visibility": "매우 좋음",
             "crowd": "여유",
-            "reason": "시야가 깨끗하고 사람이 많지 않음"
+            "reason": "시야가 깨끗하고 가시거리가 확보됨"
         }
         """
         
