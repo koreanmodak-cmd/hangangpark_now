@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import sys
+import time
 from io import BytesIO
 from PIL import Image
 from datetime import datetime, timezone, timedelta
@@ -34,7 +35,7 @@ def run_analysis():
         
         image = Image.open(BytesIO(response.content))
 
-        # 3. 최신 Gemini 모델 명시적 적용 (3.8-flash)
+        # 3. 최신 Gemini 모델 프롬프트 세팅
         prompt = """
         당신은 한강공원 실시간 상태를 분석하는 정밀 관측 AI입니다.
         제공된 CCTV 이미지를 분석하여 날씨, 가시거리, 혼잡도 상태를 판독하세요.
@@ -48,10 +49,26 @@ def run_analysis():
         """
         
         print("Gemini Vision AI 분석 요청 중 (gemini-3.8-flash)...")
-        result = client.models.generate_content(
-            model='gemini-3.8-flash',
-            contents=[image, prompt]
-        )
+        
+        # 💡 [핵심] 구글 서버 폭주(503 에러) 대비 재시도 방어막 구축
+        max_retries = 10
+        result = None
+        
+        for attempt in range(max_retries):
+            try:
+                result = client.models.generate_content(
+                    model='gemini-3.8-flash',
+                    contents=[image, prompt]
+                )
+                break  # 성공하면 즉시 루프 탈출
+            except Exception as api_err:
+                print(f"⚠️ API 서버 응답 지연 (시도 {attempt+1}/{max_retries}): {api_err}")
+                if attempt < max_retries - 1:
+                    sleep_time = 10  # 10초 대기
+                    print(f"🔄 구글 서버 혼잡으로 인해 {sleep_time}초 후 다시 요청합니다...")
+                    time.sleep(sleep_time)
+                else:
+                    raise Exception("구글 서버가 현재 완전히 혼잡합니다. 다음 30분 스케줄 때 다시 시도합니다.")
         
         result_text = result.text.strip()
         
