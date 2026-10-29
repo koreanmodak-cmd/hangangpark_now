@@ -1,0 +1,25 @@
+[
+  {
+    "location_check": {
+      "is_hangang_park": false,
+      "detected_location": "산악 지형 계곡 (미국 요세미티 국립공원 추정)"
+    },
+    "weather_condition": {
+      "sky_status": "맑음 (연무/박무 형성)",
+      "time_of_day": "일출 또는 일몰 시간대",
+      "precipitation": "없음"
+    },
+    "visibility": {
+      "level": "보통",
+      "details": "전경의 수목과 하천은 선명하나, 원경의 암벽 및 산봉우리는 대기 중 옅은 안개 및 연무로 인해 시정이 다소 제한됨"
+    },
+    "congestion": {
+      "level": "매우 여유",
+      "people_detected": 0,
+      "details": "사람 및 인공 조형물이 관측되지 않는 자연 상태"
+    },
+    "overall_summary": "제공된 이미지는 한강공원이 아닌 외국의 산악 국립공원 계곡 풍경입니다. 일몰/일출 시각대의 은은한 노을과 연무가 형성되어 있으며 인파는 전혀 없습니다.",
+    "location": "여의도 한강공원",
+    "updated_at": "2026-10-30 00:17:47"
+  }
+]
